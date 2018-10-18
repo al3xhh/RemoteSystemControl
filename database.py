@@ -7,8 +7,8 @@ class Database:
 
     def insert(self, database, collection, data):
         client = MongoClient(self.server, self.port)
-        db = client.database
-        co = db.collection
+        db = client[database]
+        co = db[collection]
 
         post_id = co.insert(data)
 

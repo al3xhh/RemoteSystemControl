@@ -34,7 +34,7 @@ def handle(msg):
 	user = User(chat_id, msg['from']['id'], msg['from']['username'])
 	user_id = user.register()
 
-	const.bot.sendMessage(chat_id, 'User registered with ID:' +str( user_id))
+	const.bot.sendMessage(chat_id, 'User registered with ID:' + str( user_id))
 	const.bot.sendMessage(chat_id, 'Welcome ' + user.tg_user + '!')
 
 	del user 
