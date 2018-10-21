@@ -9,12 +9,21 @@ class User:
 
     def to_hash(self):
         return {"tg_chat": self.tg_chat,
-                "tg_ud":   self.tg_id,
+                "tg_id":   self.tg_id,
                 "tg_user": self.tg_user}
 
     def register(self):
         db = Database(const.mongo_server, const.mongo_port)
-        return db.insert(const.database_name, const.users_collection, self.to_hash()) 
+        ret = db.insert(const.database_name, const.users_collection, self.to_hash())
 
+        del db
 
+        return ret
 
+    def exists(self):
+        db = Database(const.mongo_server, const.mongo_port)
+        ret = db.exists(const.database_name, const.users_collection, {"tg_id": self.tg_id})
+
+        del db
+
+        return ret

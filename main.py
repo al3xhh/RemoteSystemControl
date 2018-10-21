@@ -19,27 +19,30 @@ def init_constants():
     const.bot = telepot.Bot('SECRET')
 
 def handle(msg):
-    chat_id = msg['chat']['id']
     command = msg['text']
 
     print 'Got command: %s' % command
     print msg
 
+    user = User(msg['chat']['id'], msg['from']['id'], msg['from']['username'])
+
     if command == '/start':
-        const.bot.sendMessage(chat_id, 'Welcome to Remote System Control Bot!')
-        const.bot.sendMessage(chat_id, 'These are the available commands')
-        const.bot.sendMessage(chat_id, const.available_commands)
-	const.bot.sendMessage(chat_id, 'Registering user...')
+        if not user.exists():
+            const.bot.sendMessage(user.tg_chat, 'Welcome to Remote System Control Bot!')
+            const.bot.sendMessage(user.tg_chat, 'These are the available commands')
+            const.bot.sendMessage(user.tg_chat, const.available_commands)
+	    const.bot.sendMessage(user.tg_chat, 'Registering user...')
 
-	user = User(chat_id, msg['from']['id'], msg['from']['username'])
-	user_id = user.register()
+	    user_id = user.register()
 
-	const.bot.sendMessage(chat_id, 'User registered with ID:' + str( user_id))
-	const.bot.sendMessage(chat_id, 'Welcome ' + user.tg_user + '!')
-
-	del user 
+	    const.bot.sendMessage(user.tg_chat, 'User registered with ID:' + str(user_id))
+	    const.bot.sendMessage(user.tg_chat, 'Welcome ' + user.tg_user + '!')
+        else:
+            const.bot.sendMessage(user.tg_chat, 'User ' + user.tg_user + ' is already registered!')
     else:
-        const.bot.sendMessage(chat_id, 'Command not recognized')
+        const.bot.sendMessage(user.tg_chat, 'Command not recognized')
+
+    del user
 
 def main():
     init_constants()
