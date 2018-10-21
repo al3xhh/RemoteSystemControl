@@ -6,7 +6,10 @@ class User:
         self.tg_chat = tg_chat
         self.tg_id   = tg_id
         self.tg_user = tg_user
-        self.id      = self.get()['_id']
+
+        user = self.get()
+
+        self.id      = None if user == None else user['_id']
 
     def to_hash(self):
         return {"tg_chat": self.tg_chat,
