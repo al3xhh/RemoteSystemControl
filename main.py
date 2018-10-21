@@ -7,7 +7,22 @@ import const
 
 def init_constants():
     const.available_commands = "/start register your user \n" + \
-        	               "/stop  unregister your user and delete your devices"
+                               "/stop unregister your user \n" + \
+                               "/add add a new device \n" + \
+                               "/delete <id> delete a device \n" + \
+                               "/update <id> update a device \n" + \
+                               "/list list the devices \n" + \
+                               "/device_show <id> show device info \n" + \
+                               "/monit <id> monitor a device \n" + \
+                               "/poweroff <id> power off a device \n" + \
+                               "/reboot <id> rebot a device \n" + \
+                               "/poweron <id> power on a device \n" + \
+                               "/execute <cmd> <id> execute cmd on the device \n" + \
+                               "/groups list the devices groups \n" + \
+                               "/group <cmd> <id> execute cmd on group devices \n" + \
+                               "/group_show <id> show devices in the group \n" + \
+                               "/help show this list \n" + \
+                               "/help <command> show command help"
 
     const.mongo_server = '10.0.0.6'
     const.mongo_port = 27017
@@ -31,14 +46,16 @@ def handle(msg):
             const.bot.sendMessage(user.tg_chat, 'Welcome to Remote System Control Bot!')
             const.bot.sendMessage(user.tg_chat, 'These are the available commands')
             const.bot.sendMessage(user.tg_chat, const.available_commands)
-	    const.bot.sendMessage(user.tg_chat, 'Registering user...')
+            const.bot.sendMessage(user.tg_chat, 'Registering user...')
 
-	    user_id = user.register()
+            user_id = user.register()
 
-	    const.bot.sendMessage(user.tg_chat, 'User registered with ID:' + str(user_id))
-	    const.bot.sendMessage(user.tg_chat, 'Welcome ' + user.tg_user + '!')
+            const.bot.sendMessage(user.tg_chat, 'User registered with ID:' + str(user_id))
+            const.bot.sendMessage(user.tg_chat, 'Welcome ' + user.tg_user + '!')
         else:
             const.bot.sendMessage(user.tg_chat, 'User ' + user.tg_user + ' is already registered!')
+    elif command == '/help':
+        const.bot.sendMessage(user.tg_chat, const.available_commands.format(17, 2))
     else:
         const.bot.sendMessage(user.tg_chat, 'Command not recognized')
 
