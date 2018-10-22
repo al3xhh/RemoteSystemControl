@@ -38,46 +38,46 @@ def init_constants():
     const.bot = telepot.Bot('SECRET')
 
 def handle(msg):
-    command = msg['text']
-
-    print 'Got command: %s' % command
-    print msg
-
-    command = command.split(" ")
+    command = msg['text'].split(" ")
     user = User(msg['chat']['id'], msg['from']['id'], msg['from']['username'])
     last_command = Command(user.id)
+    ret = None
 
-    if command[0] == '/start':
-        if not user.exists():
-            const.bot.sendMessage(user.tg_chat, 'Welcome to Remote System Control Bot!')
-            const.bot.sendMessage(user.tg_chat, 'These are the available commands')
-            const.bot.sendMessage(user.tg_chat, const.available_commands)
-            const.bot.sendMessage(user.tg_chat, 'Registering user...')
+    print 'Got command: %s' % command
 
-            user_id = user.register()
+    try:
+        if command[0] == '/start':
+            if not user.exists():
+                const.bot.sendMessage(user.tg_chat, 'Welcome to Remote System Control Bot!')
+                const.bot.sendMessage(user.tg_chat, 'These are the available commands')
+                const.bot.sendMessage(user.tg_chat, const.available_commands)
+                const.bot.sendMessage(user.tg_chat, 'Registering user...')
 
-            const.bot.sendMessage(user.tg_chat, 'User registered with ID:' + str(user_id))
-            const.bot.sendMessage(user.tg_chat, 'Welcome ' + user.tg_user + '!')
+                user_id = user.register()
+
+                const.bot.sendMessage(user.tg_chat, 'User registered with ID:' + str(user_id))
+                const.bot.sendMessage(user.tg_chat, 'Welcome ' + user.tg_user + '!')
+            else:
+                const.bot.sendMessage(user.tg_chat, 'User ' + user.tg_user + ' is already registered!')
+
+            last_command.update("/start")
+        elif command[0] == '/add' or last_command.command == '/add':
+            ret = Device(user.id).add(command[0])
+        elif command[0] == '/device_show':
+            ret = Device(user.id, command[1]).show()
+            last_command.update("/device_show")
+        elif command[0] == '/help':
+            ret = const.available_commands
+            last_command.update("/help")
         else:
-            const.bot.sendMessage(user.tg_chat, 'User ' + user.tg_user + ' is already registered!')
-
-        last_command.update("/start")
-    elif command[0] == '/add' or last_command.command == '/add':
-        device = Device(user.id)
-        device.add(user.tg_chat, command[0])
-
-        del device
-    elif command[0] == '/device_show':
-        device = Device(user.id, command[1])
-        device.show(user.tg_chat)
-
-        del device
-    elif command[0] == '/help':
-        const.bot.sendMessage(user.tg_chat, const.available_commands)
-        user_command.update("/help")
-    else:
-        const.bot.sendMessage(user.tg_chat, 'Command not recognized')
+            ret = 'Command not recognized'
+            last_command.update(command)
+    except Exception as ex:
+        const.bot.sendMessage(user.tg_chat, str(ex))
         last_command.update(command)
+
+    if ret:
+        const.bot.sendMessage(user.tg_chat, ret)
 
     del user
     del last_command
