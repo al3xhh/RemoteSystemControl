@@ -11,18 +11,18 @@ def init_constants():
     const.available_commands = "/start register your user \n" + \
                                "/stop unregister your user \n" + \
                                "/add add a new device \n" + \
-                               "/delete <id> delete a device \n" + \
-                               "/update <id> update a device \n" + \
+                               "/delete <name> delete a device \n" + \
+                               "/update <name> update a device \n" + \
                                "/list list the devices \n" + \
-                               "/device_show <id> show device info \n" + \
-                               "/monit <id> monitor a device \n" + \
-                               "/poweroff <id> power off a device \n" + \
-                               "/reboot <id> rebot a device \n" + \
-                               "/poweron <id> power on a device \n" + \
-                               "/execute <cmd> <id> execute cmd on the device \n" + \
+                               "/device_show <name> show device info \n" + \
+                               "/monit <name> monitor a device \n" + \
+                               "/poweroff <name> power off a device \n" + \
+                               "/reboot <name> rebot a device \n" + \
+                               "/poweron <name> power on a device \n" + \
+                               "/execute <cmd> <name> execute cmd on the device \n" + \
                                "/groups list the devices groups \n" + \
-                               "/group <cmd> <id> execute cmd on group devices \n" + \
-                               "/group_show <id> show devices in the group \n" + \
+                               "/group <cmd> <name> execute cmd on group devices \n" + \
+                               "/group_show <name> show devices in the group \n" + \
                                "/help show this list \n" + \
                                "/help <command> show command help"
 
@@ -43,10 +43,11 @@ def handle(msg):
     print 'Got command: %s' % command
     print msg
 
+    command = command.split(" ")
     user = User(msg['chat']['id'], msg['from']['id'], msg['from']['username'])
     last_command = Command(user.id)
 
-    if command == '/start':
+    if command[0] == '/start':
         if not user.exists():
             const.bot.sendMessage(user.tg_chat, 'Welcome to Remote System Control Bot!')
             const.bot.sendMessage(user.tg_chat, 'These are the available commands')
@@ -61,12 +62,17 @@ def handle(msg):
             const.bot.sendMessage(user.tg_chat, 'User ' + user.tg_user + ' is already registered!')
 
         last_command.update("/start")
-    elif command == '/add' or last_command.command == '/add':
+    elif command[0] == '/add' or last_command.command == '/add':
         device = Device(user.id)
-        device.add(user.tg_chat, command)
+        device.add(user.tg_chat, command[0])
 
         del device
-    elif command == '/help':
+    elif command[0] == '/device_show':
+        device = Device(user.id, command[1])
+        device.show(user.tg_chat)
+
+        del device
+    elif command[0] == '/help':
         const.bot.sendMessage(user.tg_chat, const.available_commands)
         user_command.update("/help")
     else:
