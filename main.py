@@ -2,6 +2,7 @@ import time
 import telepot
 from telepot.loop import MessageLoop
 
+from command import Command
 from user import User
 import const
 
@@ -30,6 +31,7 @@ def init_constants():
     const.database_name = "rsc_bot"
 
     const.users_collection = "rsc_bot_users"
+    const.lastc_collection = "rsc_bot_last_command"
 
     const.bot = telepot.Bot('SECRET')
 
@@ -40,6 +42,7 @@ def handle(msg):
     print msg
 
     user = User(msg['chat']['id'], msg['from']['id'], msg['from']['username'])
+    user_command = Command(user.id)
 
     if command == '/start':
         if not user.exists():
@@ -54,12 +57,17 @@ def handle(msg):
             const.bot.sendMessage(user.tg_chat, 'Welcome ' + user.tg_user + '!')
         else:
             const.bot.sendMessage(user.tg_chat, 'User ' + user.tg_user + ' is already registered!')
+
+        user_command.update("/start")
     elif command == '/help':
-        const.bot.sendMessage(user.tg_chat, const.available_commands.format(17, 2))
+        const.bot.sendMessage(user.tg_chat, const.available_commands)
+        user_command.update("/help")
     else:
         const.bot.sendMessage(user.tg_chat, 'Command not recognized')
+        user_command.update(command)
 
     del user
+    del user_command
 
 def main():
     init_constants()

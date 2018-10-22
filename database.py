@@ -47,6 +47,16 @@ class Database:
 
         return ret_id
 
+    def update(self, database, collection, element_key, data):
+        client, co = self.__create_objects(database, collection)
+        ret_id = co.update(element_key, {"$set": data})
+
+        client.close()
+
+        Database.delete_objects(client, co)
+
+        return ret_id
+
     #------------------------------------------------------
     # PRIVATE METHODS
     #------------------------------------------------------
