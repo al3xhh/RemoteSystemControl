@@ -3,6 +3,7 @@ import telepot
 from telepot.loop import MessageLoop
 
 from command import Command
+from device import Device
 from user import User
 import const
 
@@ -32,6 +33,7 @@ def init_constants():
 
     const.users_collection = "rsc_bot_users"
     const.lastc_collection = "rsc_bot_last_command"
+    const.devic_collection = "rsc_bot_devices"
 
     const.bot = telepot.Bot('SECRET')
 
@@ -42,7 +44,7 @@ def handle(msg):
     print msg
 
     user = User(msg['chat']['id'], msg['from']['id'], msg['from']['username'])
-    user_command = Command(user.id)
+    last_command = Command(user.id)
 
     if command == '/start':
         if not user.exists():
@@ -58,16 +60,21 @@ def handle(msg):
         else:
             const.bot.sendMessage(user.tg_chat, 'User ' + user.tg_user + ' is already registered!')
 
-        user_command.update("/start")
+        last_command.update("/start")
+    elif command == '/add' or last_command.command == '/add':
+        device = Device(user.id)
+        device.add(user.tg_chat, command)
+
+        del device
     elif command == '/help':
         const.bot.sendMessage(user.tg_chat, const.available_commands)
         user_command.update("/help")
     else:
         const.bot.sendMessage(user.tg_chat, 'Command not recognized')
-        user_command.update(command)
+        last_command.update(command)
 
     del user
-    del user_command
+    del last_command
 
 def main():
     init_constants()
