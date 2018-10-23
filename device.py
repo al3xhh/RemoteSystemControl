@@ -85,6 +85,25 @@ class Device:
 
 	return ret
 
+    #-------------
+    # List devices
+    #-------------
+    def list(self):
+        db = Database(const.mongo_server, const.mongo_port)
+        devices = db.get(const.database_name, const.devic_collection, {"user": self.user})
+
+        del db
+
+        ret = ''
+
+        if devices.count() > 0:
+            for device in devices:
+                ret += device['name'] + ' ' + device['ip'] + "\n"
+        else:
+            ret = 'There are no devices'
+
+        return ret
+
     #------------------------
     # Show device information
     #------------------------

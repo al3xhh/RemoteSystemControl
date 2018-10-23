@@ -23,12 +23,7 @@ class Database:
             del ret_element
 
     def get_single(self, database, collection, element_key):
-        client, co = self.__create_objects(database, collection)
-        ret_element = co.find(element_key)
-
-        client.close()
-
-        Database.delete_objects(client, co)
+        ret_element = self.get(database, collection, element_key)
 
         try:
             return ret_element.next()
@@ -36,6 +31,16 @@ class Database:
             return None
         finally:
             del ret_element
+
+    def get(self, database, collection, element_key):
+        client, co = self.__create_objects(database, collection)
+        ret_element = co.find(element_key)
+
+        client.close()
+
+        Database.delete_objects(client, co)
+
+        return ret_element
 
     def insert(self, database, collection, data):
         client, co = self.__create_objects(database, collection)

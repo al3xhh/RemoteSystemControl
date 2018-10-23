@@ -13,7 +13,7 @@ def init_constants():
                                "/add add a new device \n" + \
                                "/delete <name> delete a device \n" + \
                                "/update <name> update a device \n" + \
-                               "/list list the devices \n" + \
+                               "/list list your devices \n" + \
                                "/device_show <name> show device info \n" + \
                                "/monit <name> monitor a device \n" + \
                                "/poweroff <name> power off a device \n" + \
@@ -63,6 +63,9 @@ def handle(msg):
             last_command.update("/start")
         elif command[0] == '/add' or last_command.command == '/add':
             ret = Device(user.id).add(command[0])
+        elif command[0] == '/list':
+            ret = Device(user.id).list()
+            last_command.update("/list")
         elif command[0] == '/device_show':
             ret = Device(user.id, command[1]).show()
             last_command.update("/device_show")
