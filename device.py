@@ -1,6 +1,7 @@
 import const
 from command import Command
 from database import Database
+from Crypto.PublicKey import RSA
 
 class Device:
     def __init__(self, user, name=None):
@@ -34,8 +35,14 @@ class Device:
 		ret = 'What is the SSH user?'
 		self.update(command.element, {"ssh_port": text})
 	    elif command.status == 3:
-		self.update(command.element, {"ssh_user": text})
-		ret = 'Device sucessfully created!'
+                key = RSA.generate(1024)
+                pubkey = key.publickey()
+                key = key.exportKey('PEM')
+                pubkey = pubkey.exportKey('OpenSSH')
+
+                self.update(command.element, {"ssh_user": text, "ssh_private": key, "ssh_public": pubkey})
+                ret = 'Device sucessfully created!' + "\n" + key + "\n" + pubkey
+
                 command.update("device created")
 
         del command
